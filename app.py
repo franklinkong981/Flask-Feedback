@@ -104,6 +104,24 @@ def show_add_feedback_form(username):
     
     return render_template("add_feedback.html", form=add_feedback_form)
 
+@app.route("/users/<username>/delete", methods=["POST"])
+def delete_user(username):
+    """Deletes a user's account as well as each of their tweets. Only a logged in user can delete their own account."""
+    if "current_user" not in session:
+        flash("Please login first to delete your account")
+        return redirect('/login')
+    elif username != session['current_user']:
+        flash("Nice try hacker, but you can only delete your own account!")
+        return redirect(f'/users/{session["current_user"]}')
+    
+    user_to_delete = User.query.get_or_404(username)
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    session.pop('current_user')
+
+    flash("User successfully deleted!")
+    return redirect("/")
+
 @app.route("/logout")
 def logout():
     """Log out the user and clear any information in the session. Redirects user to home login page."""
