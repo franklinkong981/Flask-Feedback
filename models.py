@@ -48,3 +48,14 @@ class User(db.Model):
             return u
         else:
             return False
+
+class Feedback(db.Model):
+    """The Feedback model. Each Feedback has an id, title, content, and username of the user who created it. Each feedback
+    belongs to one user, BUT one user can create as many feedbacks as they want."""
+
+    __tablename__ = "feedbacks"
+
+    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    username = db.Column(db.Text, db.ForeignKey('users.username'), nullable=False)
