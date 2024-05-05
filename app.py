@@ -68,9 +68,14 @@ def show_login_form():
 
 @app.route("/secret")
 def show_secret():
+    """The main page users are directed to when they are first logged in."""
     if "current_user" not in session:
         flash("Please login first!")
         return redirect('/login')
     return render_template("secret.html")
 
-
+@app.route("/logout")
+def logout():
+    """Log out the user and clear any information in the session. Redirects user to home login page."""
+    session.pop('current_user')
+    return redirect('/')
