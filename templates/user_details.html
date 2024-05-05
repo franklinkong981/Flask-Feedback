@@ -8,6 +8,32 @@
     <p>Username: {{user.username}}</p>
     <p>Full name: {{user.get_full_name()}}</p>
     <p>Email address: {{user.email}}</p>
+    <form action="/users/{{user.username}}/delete" method="POST">
+        <button class="btn btn-sm btn-danger">DELETE USER</button>
+    </form>
+
+    <h2 class="display-2">Your Feedbacks:</h2>
+    <ul>
+        {% for feedback in user.feedbacks %}
+        <li>
+            <h4 class="display-4">{{feedback.title}}</h4>
+            <p>{{feedback.content}}</p>
+            <form style="display:inline;">
+                <button class="btn btn-primary btn-sm"
+                    formaction="/feedback/{{feedback.id}}/update"
+                    formmethod="GET">Edit
+                </button>
+                <button class="btn btn-danger btn-sm"
+                    formaction="/feedback/{{feedback.id}}/delete"
+                    formmethod="POST">Delete
+                </button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="/users/{{user.username}}/feedback/add" method="GET">
+        <button class="btn btn-sm btn-success">Add Feedback</button>
+    </form>
 
     <a href="/logout" class="btn btn-primary">Logout</a>
 {% endblock %}

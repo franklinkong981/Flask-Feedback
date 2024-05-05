@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
-from forms import RegisterUserForm, LoginUserForm
+from models import db, connect_db, User, Feedback
+from forms import RegisterUserForm, LoginUserForm, AddFeedbackForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -79,6 +79,30 @@ def show_user_details(username):
     
     user = User.query.get_or_404(session['current_user'])
     return render_template("user_details.html", user=user)
+
+@app.route("/users/<username>/feedback/add", methods=['GET', 'POST'])
+def show_add_feedback_form(username):
+    """Display a form for a logged in user to add feedback. Makes sure that only logged in users can see this form. 
+    If POST, adds the feedback to database as belonging to currently logged in user, then redirects to logged in user's page."""
+    if "current_user" not in session:
+        flash("Please login first to add feedback")
+        return redirect('/login')
+    elif username != session['current_user']:
+        return redirect(f'/users/{session["current_user"]}/feedback/add')
+    
+    add_feedback_form = AddFeedbackForm()
+
+    if add_feedback_form.validate_on_submit():
+        title = add_feedback_form.title.data
+        content = add_feedback_form.content.data
+
+        new_feedback = Feedback(title=title, content=content, username=session['current_user'])
+        db.session.add(new_feedback)
+        db.session.commit()
+        flash('Successfully added feedback')
+        return redirect(f'/users/{session["current_user"]}')
+    
+    return render_template("add_feedback.html", form=add_feedback_form)
 
 @app.route("/logout")
 def logout():
