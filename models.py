@@ -20,6 +20,10 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
+    def get_full_name(self):
+        """Returns the first name and last name of the user."""
+        return f"{self.first_name} {self.last_name}"
+
     @classmethod
     def register(cls, username, password, email, first_name, last_name):
         """Register user with hashed password and return user. If the username is already taken, return false."""

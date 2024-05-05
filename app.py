@@ -40,7 +40,7 @@ def show_register_form():
             db.session.commit()
             session['current_user'] = new_user.username
             flash("Welcome! Successfully created account")
-            return redirect("/secret")
+            return redirect(f'/users/{session["current_user"]}')
         else:
             registerForm.username.errors.append('Username already taken. Please pick another')
 
@@ -60,19 +60,25 @@ def show_login_form():
         if user:
             flash(f"Welcome Back, {user.username}!")
             session['current_user'] = user.username
-            return redirect('/secret')
+            return redirect(f'/users/{session["current_user"]}')
         else:
             loginForm.username.errors = ['Invalid username/password']
     
     return render_template("login.html", form=loginForm)
 
-@app.route("/secret")
-def show_secret():
-    """The main page users are directed to when they are first logged in."""
+@app.route("/users/<username>")
+def show_user_details(username):
+    """The main page users are directed to when they are first logged in. Shows all user information except their password. Only logged in 
+    users can access this page, and can only see their own page."""
     if "current_user" not in session:
-        flash("Please login first!")
+        flash("Please login first to see your user page and feedbacks!")
         return redirect('/login')
-    return render_template("secret.html")
+    elif username != session['current_user']:
+        flash("You can only see information about your own page!")
+        return redirect(f'/users/{session["current_user"]}')
+    
+    user = User.query.get_or_404(session['current_user'])
+    return render_template("user_details.html", user=user)
 
 @app.route("/logout")
 def logout():
