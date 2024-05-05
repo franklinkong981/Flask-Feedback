@@ -24,9 +24,10 @@ def home():
 @app.route("/login")
 def show_login_form():
     """Shows form that when submitted will login a user. This form accepts a username and password. Also contains a link to the register page."""
-    
+    return render_template("login.html")
 
 @app.route("/register")
 def show_registration_form():
     """Shows the form that when submitted will register/create a new user. This form accepts a username, password email, first name,
     and last name."""
+    return render_template("register.html")
