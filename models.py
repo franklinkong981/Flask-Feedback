@@ -20,6 +20,8 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
+    feedbacks = db.relationship('Feedback', cascade='all, delete', backref='author')
+
     def get_full_name(self):
         """Returns the first name and last name of the user."""
         return f"{self.first_name} {self.last_name}"
