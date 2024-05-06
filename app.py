@@ -176,3 +176,11 @@ def logout():
     """Log out the user and clear any information in the session. Redirects user to home login page."""
     session.pop('current_user')
     return redirect('/')
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html")
+
+@app.errorhandler(401)
+def auth_failure(e):
+    return render_template("401.html")
