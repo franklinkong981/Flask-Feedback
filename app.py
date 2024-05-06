@@ -25,6 +25,10 @@ def home():
 def show_register_form():
     """Shows the form that when submitted will register/create a new user. This form accepts a username, password email, first name,
     and last name. If POST, attempts to register the user by adding the enw user to the database, then redirects user to secret page."""
+    if "current_user" in session:
+        flash("You're already registered!")
+        return redirect(f'/users/{session["current_user"]}')
+    
     registerForm = RegisterUserForm()
 
     if registerForm.validate_on_submit():
@@ -50,6 +54,10 @@ def show_register_form():
 def show_login_form():
     """Shows form that when submitted will login a user. This form accepts a username and password. Also contains a link to the register page.
     If POST, attemps to log in the user. If username is found in database and hashed password matches, redirects user to secret page."""
+    if "current_user" in session:
+        flash("You're already logged in!")
+        return redirect(f'/users/{session["current_user"]}')
+    
     loginForm = LoginUserForm()
 
     if loginForm.validate_on_submit():
