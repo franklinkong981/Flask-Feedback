@@ -122,7 +122,7 @@ def delete_user(username):
     flash("User successfully deleted!")
     return redirect("/")
 
-@app.route("/feedback/<feedback_id>/update", methods=['GET', 'POST'])
+@app.route("/feedback/<int:feedback_id>/update", methods=['GET', 'POST'])
 def show_update_feedback_form(feedback_id):
     """If GET, show the form to edit a specific feedback by the user. Logged in users can only edit their own feedbacks.
     If POST, update the specific piece of feedback and redirect to the users details page."""
@@ -144,6 +144,24 @@ def show_update_feedback_form(feedback_id):
         return redirect(f'/users/{session["current_user"]}')
     else:
         return render_template("edit_feedback.html", form=edit_feedback_form)
+
+@app.route("/feedback/<int:feedback_id>/delete", methods=['POST'])
+def delete_feedback(feedback_id):
+    """Delete a specific feedback and redirect to the logged in user's details page. Ensures that logged in user can only 
+    delete their own feedbacks."""
+    feedback = Feedback.query.get_or_404(feedback_id)
+    if "current_user" not in session:
+        flash("Please login first to delete your feedbacks")
+        return redirect('/login')
+    elif feedback.author.username != session['current_user']:
+        flash("Sorry! You can't delete a feedback that isn't yours")
+        return redirect(f'/users/{session["current_user"]}')
+    
+    db.session.delete(feedback)
+    db.session.commit()
+
+    flash("Feedback successfully deleted!")
+    return redirect(f'/users/{session["current_user"]}')
 
 @app.route("/logout")
 def logout():
